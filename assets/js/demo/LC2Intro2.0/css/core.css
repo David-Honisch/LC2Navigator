@@ -1,0 +1,32 @@
+/* reset css starts */
+
+/* HTML5 display-role reset for older browsers */
+/* article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;} */
+/* body {  */
+/* important; background: #FFFFFF; */
+/* text-align:center; */
+/* } */
+.democontent
+{
+	text-align:center;
+/* 	background: #008040; */
+	/* margin-left:0; */
+	/* left:0; */
+	height:480px;
+	width:640px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:auto;
+	margin-bottom:auto;
+}
+#lc2introCanvas
+{
+	height:480px;
+	width:640px;
+	text-align:center;
+	background: #ffffff;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:auto;
+	margin-bottom:auto;
+}
