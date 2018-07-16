@@ -1,3 +1,11 @@
+LC2Navigator v.0.1a
+
+Diese Inhalte verlinkt auf externe Web Inhalte.
+Für die Inhalte der Drittanbieter wird keine Haftung übernommen.
+
+NPM, Apache Cordova, Electron, JQuery, API Navagationssoftware für
+http://www.letztechance.org
+
 (c)by webmaster@letztechance.org
 --------------------------
 http://www.letztechance.org
