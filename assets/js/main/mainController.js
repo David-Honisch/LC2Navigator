@@ -3,6 +3,7 @@
 var FastClick = function(FastClick) {
 	FastClick.attach(document.body);
 	};
+//var hostName = "./";
 //var hostName = "http://localhost/cms5/";
 var hostName = "http://www.letztechance.org/";
 var openLink = this.hostName+"openlink?";
@@ -27,6 +28,15 @@ var pathArray = window.location.pathname.split( '/' );
 var secondLevelLocation = pathArray[0];
 var dropdown1 = [ "Chat","Flickr", "IRC", "ICQ", "Jabber", "Skype", "Whatsapp" ];
 var dropdown2 = [ "EXCEL", "PDF", "WORD", "ZIP" ];
+var LIST = {};
+LIST["News"] = {
+"All" : new API().hostName+"list-1-1.html",
+"Videos" : new API().hostName+"index.php?q=lastcontent&amp;value1=21",
+"All Videos" : new API().hostName+"list-21-1.html"
+};
+LIST["Website Search"] = {
+"All" : new API().hostName+"?q=plugins&plugin=lc2javascriptsearch.v.1.0"
+};
 function MainController(page) {
 	this.page = page;
 	this.pageController;
@@ -98,10 +108,7 @@ jQuery(document).ready(function() {
 					: "home";
 
 			page = new PageCheck().init(page);
-			var url = new API().hostName+"webservices/client.php?q=getFullIndexJSON&l=" + lang+ "";
-			catindex = getJSON(url);
-//			html.getNavigation();
-
+			catindex = new API().getIndex(0);			
 			var ctrl = new MainController(page);
 
 			ctrl.getPage(page);

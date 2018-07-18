@@ -1,5 +1,6 @@
 function Home() {
 	this.oHTML = new HTML();
+	this.oCharts = new Charts();
 	this.getTabHead = function getTabHead(subject) {
 		var tabs = [ "home", "rss feeds", "info", "export" ];
 		var dropdown1 = [ "Chat", "IRC", "ICQ", "Jabber", "Skype", "Whatsapp" ];
@@ -113,7 +114,7 @@ function Home() {
 		result += "                     <div class=\"panel-body\"> ";
 		result += "                         <div id=\"d1-c4\" style=\"height:320px\"></div> ";
 		result += "                     </div> ";
-		result += "                 </div> ";
+		result += "</div> ";
 
 		// result += " <div class=\"alert alert-info shadowed\" role=\"alert\">
 		// <i class=\"fa fa-fw fa-info-circle\"></i> C3.js chart library by
@@ -131,62 +132,8 @@ function Home() {
 		result += "             </div> ";
 		return result;
 	}
-	this.getTD = function getTD(value, title) {
-		var title = title !== undefined ? title : "N/A";
-		var value = value !== undefined ? value : 0;
-		var result = "<tr>";
-		result += "<td style=\"white-space:nowrap\">" + title + "</td>";
-		result += "<td>";
-		result += "<div class=\"progress\">";
-		result += "<div class=\"progress-bar progress-bar-danger\" style=\"width:"
-				+ value + "%\"></div>";
-		result += "</div>";
-		result += "</td>";
-		result += "<td>" + value + "%</td>";
-		result += "</tr>";
-		return result;
-	}
-
-	this.getProgressBars = function getProgressBars(res) {
-		var result = "";
-		try {			
-		
-		result = "<table class=\"table table-bordered\"> ";
-		var list = {};
-		$("#panelprogressData").html();
-		for ( var v in res) {
-			var t = res[v].url.split("-")[1];
-			if (t !== undefined) {
-				if (list[t] !== undefined) {
-					var c = parseInt(list[t]);
-					list[t] = (+1 + c);
-				} else {
-					list[t] = 0;
-				}
-			}
-		}
-		var max = 0;
-		for ( var v in list) {
-			max = +max + list[v];
-		}
-		var onePercent = +(+max / 100);
-		for ( var v in list) {
-			var val = list[v];
-			// $("#panelprogressData").append(onePercent);
-			var currentPercent = ((+onePercent * +val) / 100);
-			// $("#panelprogressData").append("<hr>val "+val+" 1%:"+onePercent+"
-			// Max:"+max+"<hr>"+currentPercent+" %<hr>");
-			var td = this.getTD(currentPercent, catindex.list[v - 1].name)
-			result += td;
-			// $("#panelprogressData").append(td);
-		}
-		result += "</table> ";
-		} catch (e) {
-			console.log(e+e.stack);
-		}
-		return result;
-	}
-
+	
+	
 }
 $(function() {
 	var result = "";
@@ -250,7 +197,7 @@ $(function() {
 					[ '#3498db', '#2980b9' ], false);
 		});
 		getVideoClipOfTheDay('#videoofday');
-
+		//calendar
 		$.getScript('./assets/js/fullcalendar/fullcalendar.min.js', function() {
 			$("#c3out").append("js/fullcalendar/fullcalendar.min.js...");
 		});
@@ -262,6 +209,7 @@ $(function() {
 		$.getScript('./assets/js/fullcalendar/mainview.js', function() {
 			$("#c3out").append("js/fullcalendar/mainview.js...");
 		});
+		//eof calendar
 		jQuery(document)
 				.ready(
 						function() {
@@ -275,7 +223,7 @@ $(function() {
 											.html(
 													"Initializing data done. Printing out hits. Please wait paitently...");
 									$("#panelprogress").html(
-											oHome.getProgressBars(eventsList));
+											oHome.oCharts.getProgressBars(eventsList));
 								} else {
 									$("#panelprogress").html(
 											"Sorry, no data found ?");
@@ -286,18 +234,6 @@ $(function() {
 												+ e.stack);
 							}
 						});
-
-		// $('#demo-buttons button').click(function() {
-		// var color = $(this).data('switch-color');
-		// $('.cm-navbar').removeClass(navbar_cc);
-		// navbar_cc = 'cm-navbar-' + color;
-		// $('.cm-navbar').addClass(navbar_cc);
-		// $('.cm-navbar .btn').removeClass(btn_cc);
-		// btn_cc = 'btn-' + color;
-		// $('.cm-navbar .btn').addClass(btn_cc);
-		// });
-		// alert('Debug');
-
 	} catch (e) {
 		oRead.oHTML.setErrorPage(e);
 	}

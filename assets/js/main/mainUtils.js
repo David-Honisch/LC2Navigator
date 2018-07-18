@@ -1,12 +1,3 @@
-var LIST = {};
-LIST["News"] = {
-"All" : new API().hostName+"list-1-1.html",
-"Videos" : new API().hostName+"index.php?q=lastcontent&amp;value1=21",
-"All Videos" : new API().hostName+"list-21-1.html"
-};
-LIST["Website Search"] = {
-"All" : new API().hostName+"?q=plugins&plugin=lc2javascriptsearch.v.1.0"
-};
 function API() {
 //	this.hostName = "./";
 	this.hostName = hostName;
@@ -26,6 +17,11 @@ function API() {
 	}
 	this.doGetEvents = function doGetEvents() {
 		var url = this.hostName+"webservices/client.php?q=getFullCalendar&IsSort=0&cdate=2017-04-18 15:23:09&value1=1&value2=1";
+		return getJSON(url);
+	}
+	
+	this.getIndex = function getIndex(page) {
+		var url = this.hostName+"webservices/client.php?q=getFullIndexJSON&l=" + lang+ "";
 		return getJSON(url);
 	}
 	
@@ -61,13 +57,7 @@ function API() {
 	this.getFullCalendar = function getFullCalendar(lang) {
 		var api = this.hostName+"webservices/client.php?q=getLang&value1=" + lang + "";
 		return getJSON(api);
-	}
-	
-	
-	
-	
-	
-	 
+	}	 
 }
 function HTMLParser() {
 	this.getURLsFromString = function getURLsFromString(str) {
@@ -90,7 +80,137 @@ function addExportEvents() {
 		});
 	}	
 }
+function Charts() {
+	this.getTD = function getTD(value, title) {
+		var title = title !== undefined ? title : "N/A";
+		var value = value !== undefined ? value : 0;
+		var result = "<tr>";
+		result += "<td style=\"white-space:nowrap\">" + title + "</td>";
+		result += "<td>";
+		result += "<div class=\"progress\">";
+		result += "<div class=\"progress-bar progress-bar-danger\" style=\"width:"
+				+ value + "%\"></div>";
+		result += "</div>";
+		result += "</td>";
+		result += "<td>" + value + "%</td>";
+		result += "</tr>";
+		return result;
+	}
+	this.getProgressBars = function getProgressBars(res) {
+		var result = "";
+		try {			
+		
+		result = "<table class=\"table table-bordered\"> ";
+		var list = {};
+		$("#panelprogressData").html();
+		for ( var v in res) {
+			var t = res[v].url.split("-")[1];
+			if (t !== undefined) {
+				if (list[t] !== undefined) {
+					var c = parseInt(list[t]);
+					list[t] = (+1 + c);
+				} else {
+					list[t] = 0;
+				}
+			}
+		}
+		var max = 0;
+		for ( var v in list) {
+			max = +max + list[v];
+		}
+		var onePercent = +(+max / 100);
+		for ( var v in list) {
+			var val = list[v];
+			// $("#panelprogressData").append(onePercent);
+			var currentPercent = ((+onePercent * +val) / 100);
+			// $("#panelprogressData").append("<hr>val "+val+" 1%:"+onePercent+"
+			// Max:"+max+"<hr>"+currentPercent+" %<hr>");
+			var td = this.getTD(currentPercent, catindex.list[v - 1].name)
+			result += td;
+			// $("#panelprogressData").append(td);
+		}
+		result += "</table> ";
+		} catch (e) {
+			console.log(e+e.stack);
+		}
+		return result;
+	}
+
+}
+function UTIL() {
+	this.uniq = function uniq(a) {
+		   return Array.from(new Set(a));
+	}	
+	this.getEventsByDate = function getEventsByDate(eventsResult) {
+		var i = 0;
+		var cyear = new Date().getFullYear();
+		var g = [];
+		for ( var s in eventsResult) {
+			if ((eventsResult[s].start).includes(cyear)) {
+				var str = "" + eventsResult[s].start.substring(0, 10) + "";
+				if (str !== null && str !== "null" && !g.includes(str)) {
+					g[i] = str.toString();
+					i++;
+				}
+			}
+		}
+		g = new UTIL().uniq(g);
+		return g.reverse();
+	}
+
+	this.setEventsSorted = function setEventsSorted(g, grid) {		
+		grid[0][1] = g.toString();
+		return grid;
+	}
+	
+	this.setEventsNumbers = function setEventsNumbers(g, grid, eventsResult) {
+		var i = 0;
+		var news = [];
+		var security = [];
+//		$("#cnt").append(getBoxFluid("Set Number:" + JSON.stringify(grid) + "<hr>"));
+		var lv = 0;
+		for (var v in g)
+		{
+			var cdate = g[v];
+			for (var p in eventsResult )
+			{
+				if (cdate == eventsResult[p].start.substring(0, 10))
+				{
+					if (eventsResult[p].url.includes("read-1-"))
+					{
+						news[v] = lv;
+						lv++;
+						i++;
+					}
+					if (eventsResult[p].url.includes("read-2-"))
+					{
+						security[v] = lv;
+						lv++;
+						i++;
+					}
+				}
+			}
+		}
+//		$("#cnt").append(getBoxFluid("Event:" + JSON.stringify(news) + "<hr>"));		
+		grid[1][1] = ""+news.toString();
+		grid[2][1] = ""+security.toString();
+		return grid;
+	}
+}
 function HTML() {
+	
+	this.getLoginForm = function getLoginForm() {
+		var result = "";
+		result += " <form action=\""+new API().hostName+"?q=login\" method=\"get\" rel=\"external\" target=\"_parent\"> "; 
+		result += " <input name=\"q\" id=\"q\" value=\"login\" type=\"hidden\"> "; 
+		result += " <label>Benutzer:</label><input name=\"user\" id=\"user\" value=\"\" type=\"text\"> "; 
+		result += " <label>Passwort:</label><input name=\"pass\" id=\"pass\" value=\"\" type=\"password\"><label>Passwort speichern:</label> "; 
+		result += " <input name=\"spass\" id=\"spass\" value=\"\" type=\"checkbox\"><label>Hochladen:</label><input name=\"file\" id=\"file\" type=\"file\"> "; 
+		result += " <input name=\"login\" id=\"login\" value=\"Login\" type=\"submit\" class=\"btn btn-default\"> "; 
+		result += " </form> ";
+		return result;
+	}
+	
 	this.getSearchTables = function getSearchTables(index, page, catindex, query) {
 		var result = "";
 		var res = [];
@@ -486,7 +606,7 @@ function HTML() {
 			{
 			var name = data.row[v].subject;
 			var id = data.row[v].id;
-			var url = new API().hostName+""+new API().hostName+"read-22-"+id+".html";
+			var url = new API().hostName+"read-22-"+id+".html";
 			result += getLI(v+""+name, url, name, "",url);
 			}
 		}
@@ -1862,7 +1982,7 @@ function IsAuthorized(user) {
 }
 function doLogout(session){	
 	var IsErased = false;
-	var j =  getLogout(session);
+	var j =  new API().getLogout(session);
 	if (j.status == true)
 	{
 		if (IsErased){
@@ -1984,7 +2104,7 @@ function getLI(type, index, page, attrib, url){
 	} catch (e) {
 		printOut('#out','Exception:'+e.stack,true);
 	}
-	return "<li><a href=\""+new API().hostName+""+url+"\""+attrib+">"+page+"</a></li>\n";
+	return "<li><a href=\""+url+"\""+attrib+">"+page+"</a></li>\n";
 }
 function getLiHref(name, url, id, cls, attrib, hrefattrib) {
 	{

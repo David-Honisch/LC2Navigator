@@ -8,6 +8,8 @@ $(function() {
 			&& Number.isInteger(value1) ? value1 : 1;
 	var page = value2 !== null && value2 !== undefined && value2 !== null
 			&& Number.isInteger(value2) ? value2 : 1;
+	this.oHTML = new HTML();
+	this.oAPI = new API();
 	try {
 		var str = ""+window.location;
 		if (page == 1 && str.includes(".html")) {
@@ -34,15 +36,15 @@ $(function() {
 		tabContent += "<div role=\"tabpanel\" class=\"tab-pane fade active in\" id=\"article\" aria-labelledby=\"home-tab\"> ";
 		if (isAuthorized) {
 			tabContent += "<h1>Login</h1>";
-			var auth = doGetAuth(userName, passWord);
-			user = doIsAuth(token);
+			var auth = this.oAPI.doGetAuth(userName, passWord);
+			user = this.oAPI.doIsAuth(token);
 			// login
 			var dto = JSON.parse(JSON.stringify(user.data.data));
 			var userName = dto !== undefined && dto[0] !== undefined
 					&& dto[0].name !== undefined ? dto[0].name : "anonymous";
 			tabContent += "Welcome, <strong>" + userName + "</strong><hr>";
 			
-			var read = new API().getRead(index, page);
+			var read = this.oAPI.getRead(index, page);
 			var subject = read.subject;
 			var body = read.body;
 //			alert(subject+""+index+"#"+page+JSON.stringify(read));
@@ -65,8 +67,8 @@ $(function() {
 		
 		jQuery(document).ready(function() {
 			try {				
-			
-			$('#value1').val(value2);
+//			alert(index+"-"+page);
+			$('#value1').val(index);
 			$('#cdate').val('06.06.2018');
 //			$.getScript('./assets/js/jquery-datepicker/jquery.mobile.datepicker.js', function() {
 			$.getScript('./assets/js/jquery.ui/jquery-ui.min.js', function() {
@@ -100,17 +102,11 @@ $(function() {
 		
 		
 	} catch (e) {
-		setPage("#out", getBoxFluid(e + "<hr>" + e.stack));
+		setPage("#error", getBoxFluid(e + "<hr>" + e.stack));
 	}
 	// events
 	$(function() {
-//		var theValue = $('#value1').val();
-//		$('option[value=' + theValue + ']').attr('selected',true);
-//		$(document).ready(
-		var selectedValue = 
-				$('#value1').val(2);
-//		});
-		
+		var selectedValue =	$('#value1').val(index);	
 		$('#btnCopy').on('click', function(e) { // use on if jQuery 1.7+
 			e.preventDefault(); // prevent form from submitting
 			var data = $("#ytsrc").html();
@@ -351,7 +347,7 @@ $(function() {
 		result += "</select>";
 
 		result += "</fieldset>";
-		var result;
+		return result;
 	}
 
 });

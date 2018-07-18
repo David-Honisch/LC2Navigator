@@ -1,5 +1,6 @@
 function Read() {
 	this.oHTML = new HTML();
+	this.oAPI = new API();
 
 	this.getTabHead = function getTabHead(subject) {
 		var tabHeader = "<li role=\"presentation\" class=\"active\"><a href=\"#article\" id=\"home-tab\" role=\"tab\" data-toggle=\"tab\" aria-controls=\"home\" aria-expanded=\"true\">"
@@ -26,6 +27,7 @@ function Read() {
 $(function() {
 	var result = "";
 	var oRead = new Read();
+	
 	try {
 
 		var value1 = $.getUrlVars()["value1"];
@@ -66,7 +68,7 @@ $(function() {
 		window.status = read.subject;
 		document.title = read.subject;
 		//read plugin
-		var pluginUrl = "plugins-" + index + "-" + page + ".html";
+		var pluginUrl = oRead.oAPI.hostName+"plugins-" + index + "-" + page + ".html";
 		$.ajax({
 			url : pluginUrl,
 			success : function(res) {

@@ -1,4 +1,6 @@
 function Login() {
+	this.oHTML = new HTML();
+	this.oAPI = new API();
 	this.getTabHeader = function getTabHeader() {
 		var tabHeader = "<li role=\"presentation\" class=\"active\"><a href=\"#article\" id=\"home-tab\" role=\"tab\" data-toggle=\"tab\" aria-controls=\"home\" aria-expanded=\"true\">"
 				+ msg("login") + "</a></li>";
@@ -25,8 +27,8 @@ function Login() {
 			tabContent += "<h1>LoggedIn</h1>";
 			var usr = $.getUrlVars()["user"];
 			var pwd = $.getUrlVars()["pass"];
-			var auth = doGetAuth(usr, pwd);
-			user = doIsAuth(token);
+			var auth = this.oAPI.doGetAuth(usr, pwd);
+			user = this.oAPI.doIsAuth(token);
 			tabContent += html.getPostForm(isAuthorized, value1, value2);
 
 		} else {
@@ -258,18 +260,20 @@ $(function() {
 			&& Number.isInteger(value1) ? value1 : 1;
 	var page = value2 !== null && value2 !== undefined && value2 !== null
 			&& Number.isInteger(value2) ? value2 : 1;
-
-	var login = new Login();
-
-	getPreloader("login", "#out");
-	//
-	var title = breadCrumb("Login", index, page);
-	setPage("#out", title);
-	var tabHeader = login.getTabHeader();
-	var tabContent = login.getTabContent(isAuthorized, value1, value2);
-	result += getBoxFluid(getTabs("sTab", tabHeader, tabContent));
-	setPage("#out", result);
-	// register events
-	login.addEvents();
+	var login;
+	try {
+		login = new Login();	
+		getPreloader("login", "#out");
+		var title = breadCrumb("Login", index, page);
+		setPage("#out", title);
+		var tabHeader = login.getTabHeader();
+		var tabContent = login.getTabContent(isAuthorized, value1, value2);
+		result += getBoxFluid(getTabs("sTab", tabHeader, tabContent));
+		setPage("#out", result);
+		// register events
+		login.addEvents();
+	} catch (e) {
+		login.oHTML.setErrorPage(e);
+	}
 
 });

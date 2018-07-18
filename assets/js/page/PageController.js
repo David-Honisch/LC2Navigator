@@ -9,6 +9,7 @@ function PageController(page) {
 	}
 
 	this.doAuth = function doAuth() {
+		var that = this;
 		try {
 			this.api = new API();
 			session = doReadCookieSession();
@@ -38,6 +39,21 @@ function PageController(page) {
 				+ "Initializing events done. Selecting :" + eventsList.length
 				+ " items.", true));
 	}
+	
+	this.init = function init() {
+		var mDialog = getBoxFluid(this.html.getModalDialog());
+		printOut("#out", mDialog
+				+ getBoxFluid("<div =\"mainfoot\">"
+						+ doCreateSocialMediaLinks('#mainfoot',
+								document.location.href, 'Title')
+						+ "</div>"), true);
+		new addExportEvents().addEvents();
+		// this.addAutoCompletion(eventsList);
+		printOut("#conntected", userName + " is authorized:<strong>"
+				+ isAuthorized + "</strong>", false);
+		this.html.addTabs();
+		printOut("#modal-body", this.html.getLoginForm(),false);
+	}
 
 	this.doLoadPage = function doLoadPage(page) {
 		try {
@@ -49,17 +65,7 @@ function PageController(page) {
 					+ ".", true));
 			this.html.getNavigation();
 			$.getScript(pageScript, function() {
-				var mDialog = getBoxFluid(new HTML().getModalDialog());
-				printOut("#out", mDialog
-						+ getBoxFluid("<div =\"mainfoot\">"
-								+ doCreateSocialMediaLinks('#mainfoot',
-										document.location.href, 'Title')
-								+ "</div>"), true);
-				new addExportEvents().addEvents();
-				// this.addAutoCompletion(eventsList);
-				printOut("#conntected", userName + " is authorized:<strong>"
-						+ isAuthorized + "</strong>", false);
-				new HTML().addTabs();
+				that.init();
 			});
 		} catch (e) {
 			alert(e.name+"\n"+e.message + "" + e.stack);
@@ -157,6 +163,7 @@ function PageController(page) {
 
 	this.addEvents = function addEvents(eventsList) {
 		try {
+			this.api = this.api !== undefined ? this.api : new API();
 			this.html = this.html !== undefined ? this.html : new HTML();
 			var that = this;
 
@@ -165,6 +172,7 @@ function PageController(page) {
 			// html.doCreateMarquee();
 			$(".cm-flex").on("click", function() {
 				$("#cm-search-btn").click();
+				$("#cm-search-btn").focus();
 			});
 			$("#btngames").on("click", function() {
 				that.html.doGetGames();
@@ -192,7 +200,7 @@ function PageController(page) {
 			$(".cm-flex").keypress(
 					function(e) {
 						if (e.which == 13) {
-							var url = "./index.php?q=search&query="
+							var url = that.api.hostName+"index.php?q=search&query="
 									+ $("#btnquery").val() + "";
 							window.location = url;
 						}
